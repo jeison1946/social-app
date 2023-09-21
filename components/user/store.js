@@ -1,11 +1,42 @@
-const {collection, getDocs} = require('./model');
+const Model = require('./model');
 
-async function getUser() {
-  const users = await getDocs(collection);
-  return await users.docs.map(doc => doc.data());
+function addUser(user) {
+  const newUser = new Model(user);
+  return newUser.save();
+}
+
+async function getUser(filter) {
+  const filters = {};
+  if(filter && filter.email) {
+    filters.email = {
+      $regex: filter.email,
+      $options: 'i'
+    }
+  }
+
+  if(filter && filter.excluid_user) {
+    filters._id = {
+      $nin: [filter.excluid_user]
+    }
+  }
+  return await Model.find(filters).limit(10);
+}
+
+async function updateUser(id, name) {
+  const findUser = await Model.findById(id);
+  findUser.name = name;
+  return await findUser.save();
+}
+
+async function deleteUser(id) {
+  const findUser = await Model.findById(id);
+  return await findUser.delete();
 }
 
 
 module.exports = {
+  add: addUser,
   list: getUser,
+  update: updateUser,
+  delete: deleteUser,
 }

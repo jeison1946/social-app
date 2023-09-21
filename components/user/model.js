@@ -1,9 +1,21 @@
-const db = require('../../db');
-const { getFirestore, collection, getDocs } = require('firebase/firestore/lite');
+const mongoose =  require('mongoose');
 
+const Schema = mongoose.Schema;
 
+const mySchema = new Schema({
+  name: {
+    type: String,
+    require: true
+  },
+  email: {
+    type: String,
+    require: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
+});
 
-module.exports = {
-  collection: collection(db, 'users'),
-  getDocs
-}
+const model = mongoose.model('User', mySchema);
+module.exports = model;
