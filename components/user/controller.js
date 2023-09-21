@@ -1,42 +1,51 @@
-const Model = require('./model');
+const store = require('./store');
 
-function addUser(user) {
-  const newUser = new Model(user);
-  return newUser.save();
-}
-
-async function getUser(filter) {
-  const filters = {};
-  if(filter && filter.email) {
-    filters.email = {
-      $regex: filter.email,
-      $options: 'i'
-    }
+function addUser(data) {
+  const user = {
+    name: data.name,
+    email: data.email,
   }
+  return store.add(user);
+}
 
-  if(filter && filter.excluid_user) {
-    filters._id = {
-      $nin: [filter.excluid_user]
+function getUser(filter) {
+  return new Promise((resolve, reject) => {
+    resolve(store.list(filter));
+  });
+}
+
+function getStatus(idToken) {
+  return new Promise((resolve, reject) => {
+    resolve(user.statusTokenUser(idToken));
+  });
+}
+
+function updateUser(id, data)  {
+  return new Promise(async (resolve, reject) => {
+    if(!id || !data.name) {
+      return reject('Invalid data'); 
     }
-  }
-  return await Model.find(filters).limit(10);
+
+    const result = await store.update(id, data.name);
+    resolve(result)
+  });
 }
 
-async function updateUser(id, name) {
-  const findUser = await Model.findById(id);
-  findUser.name = name;
-  return await findUser.save();
-}
+function deleteUser(id)  {
+  return new Promise(async (resolve, reject) => {
+    if(!id) {
+      return reject('Invalid data'); 
+    }
 
-async function deleteUser(id) {
-  const findUser = await Model.findById(id);
-  return await findUser.delete();
+    const result = await store.delete(id);
+    resolve(result)
+  });
 }
-
 
 module.exports = {
-  add: addUser,
-  list: getUser,
-  update: updateUser,
-  delete: deleteUser,
+  addUser,
+  getUser,
+  updateUser,
+  deleteUser,
+  getStatus
 }

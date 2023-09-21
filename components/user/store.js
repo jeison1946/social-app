@@ -30,7 +30,13 @@ async function updateUser(id, name) {
 
 async function deleteUser(id) {
   const findUser = await Model.findById(id);
-  return await findUser.delete();
+  if(findUser) {
+    return `Se ha eliminado con exito el usuario ${id}`;
+  }
+  else {
+    return `No se encontró el usuario ${id}`;
+  }
+  
 }
 
 
