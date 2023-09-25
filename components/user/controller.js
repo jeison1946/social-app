@@ -4,19 +4,18 @@ function addUser(data) {
   const user = {
     name: data.name,
     email: data.email,
+    password: data.password,
   }
   return store.add(user);
+}
+
+function loginUser(data) {
+  return store.login(data);
 }
 
 function getUser(filter) {
   return new Promise((resolve, reject) => {
     resolve(store.list(filter));
-  });
-}
-
-function getStatus(idToken) {
-  return new Promise((resolve, reject) => {
-    resolve(user.statusTokenUser(idToken));
   });
 }
 
@@ -47,5 +46,5 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
-  getStatus
+  loginUser
 }

@@ -1,8 +1,38 @@
 const Model = require('./model');
+jwt = require('jsonwebtoken');
 
-function addUser(user) {
-  const newUser = new Model(user);
-  return newUser.save();
+async function addUser(user) {
+  const exist = await Model.find({email: {$regex: user.email, $options: 'i'}});
+  if (exist.length > 0) {
+    return `El usuario  ${user.email} ya existe`;
+  }
+  else {
+    const newUser = new Model(user);
+    return newUser.save();
+  }
+}
+
+async function loginUser(data) {
+  return new Promise(async (resolve, reject) => {
+    await Model.findOne({email: data.email}).then(user => {
+      if(user) {
+        if (!user || !user.comparePassword(data.password)) {
+          reject('Contraseña invalida');
+        }
+        else{
+          const userInfo = {
+            user: user,
+            token: jwt.sign(JSON.stringify(user), 'apilogin'),
+          }
+          resolve(userInfo);
+        }
+        
+      }else {
+        reject('Información invalida');
+      }
+    });
+  });
+  
 }
 
 async function getUser(filter) {
@@ -19,7 +49,7 @@ async function getUser(filter) {
       $nin: [filter.excluid_user]
     }
   }
-  return await Model.find(filters).limit(10);
+  return await Model.find(filters).select(['-password']).limit(10);
 }
 
 async function updateUser(id, name) {
@@ -45,4 +75,5 @@ module.exports = {
   list: getUser,
   update: updateUser,
   delete: deleteUser,
+  login: loginUser
 }

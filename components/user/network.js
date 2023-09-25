@@ -20,7 +20,17 @@ router.post('/', function(req, res) {
       response.success(req, res, fullUser, 201);
     })
     .catch(e => {
-      response.error(req, res, 'Información invalida', 400, e)
+      response.error(req, res, e, 400, e)
+    })
+});
+
+router.post('/login', function(req, res) {
+  controller.loginUser(req.body)
+    .then((fullUser) => {
+      response.success(req, res, fullUser, 201);
+    })
+    .catch(e => {
+      response.error(req, res, e, 403, e)
     })
 });
 
