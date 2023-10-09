@@ -13,23 +13,36 @@ async function addUser(user) {
 }
 
 async function loginUser(data) {
+  let flag = {
+    status: false,
+    message: 'Información invalida11'
+  };
   return new Promise(async (resolve, reject) => {
     await Model.findOne({email: data.email}).then(user => {
-      if(user) {
-        if (!user || !user.comparePassword(data.password)) {
-          reject('Contraseña invalida');
+
+      if (user) {
+        if(!data.soacial_auth && !user.comparePassword(data.password)) {
+          flag.message = 'Contraseña invalida';
         }
-        else{
+        else {
           const userInfo = {
             user: user,
             token: jwt.sign(JSON.stringify(user), 'apilogin'),
           }
-          resolve(userInfo);
+          flag.status = true;
+          flag.message = userInfo;
         }
         
       }else {
-        reject('Información invalida');
+        flag.message = 'Usuario no existe por favor registrese';
       }
+      if(flag.status) {
+        resolve(flag.message);
+      }
+      else {
+        reject(flag.message)
+      }
+
     });
   });
   

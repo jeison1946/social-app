@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
 
 const mySchema = new Schema({
-  name: {
+  username: {
     type: String,
     required: true
   },
@@ -17,16 +17,48 @@ const mySchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
+  },
+  social_auth: {
+    type: Boolean,
+    required: true
+  },
+  age: {
+    type: Number,
+    required: true
+  },
+  fullName: {
+    type: String,
+    required: true
+  },
+  gender: {
+    type: Number,
+    required: true
+  },
+  genre: {
+    type: Number,
+    required: true
+  },
+  privacity: {
+    type: Boolean,
+    required: true
+  },
+  imageProfile: {
+    type: String,
   }
 });
 
 mySchema.pre("save", async function(next) {
   if (!this.isModified("password")) return next();
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    return next();
+    if(this.social_auth) {
+      return next();
+    }
+    else {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+      return next();
+    }
+
   } catch (error) {
     return next(error);
   }

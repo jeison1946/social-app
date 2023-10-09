@@ -2,9 +2,16 @@ const store = require('./store');
 
 function addUser(data) {
   const user = {
-    name: data.name,
+    username: data.username,
     email: data.email,
     password: data.password,
+    social_auth: data.social_auth,
+    age: data.age,
+    fullName: data.fullName,
+    gender: data.gender,
+    genre: data.genre,
+    privacity: data.privacity,
+    imageProfile: data.imageProfile
   }
   return store.add(user);
 }
